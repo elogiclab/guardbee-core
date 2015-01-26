@@ -33,7 +33,7 @@ import play.api.mvc.Result
 import play.api.mvc.Action
 import com.elogiclab.guardbee.core.JsonErrors
 import play.api.mvc.RequestHeader
-import com.elogiclab.guardbee.core.models.AccessToken
+import com.elogiclab.guardbee.core.models.AccessTokenInfo
 
 
 
@@ -53,7 +53,7 @@ trait RestApi extends Controller with JsonErrors {
   def Scope(scope: => String)(auth: => Authentication): Boolean = auth.grantedScopes.contains(scope)
   
   def verifyToken(authorization:(=> Authentication) => Boolean)(access_token:String, f: RestApiRequest[AnyContent] => Result)(implicit request:Request[AnyContent]):Result = {
-    AccessToken.get(access_token)
+    AccessTokenInfo.get(access_token)
     .filter { x => !x.isTokenExpired }
     .map { x => Authentication(x.username, Nil, x.scope.split(" ")) }
     .filter { x => authorization(x) }

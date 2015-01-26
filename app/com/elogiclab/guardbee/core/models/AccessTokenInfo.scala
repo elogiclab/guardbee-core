@@ -27,6 +27,7 @@ package com.elogiclab.guardbee.core.models
 
 import com.elogiclab.guardbee.core.utils.TokenGenerator
 import org.joda.time.DateTime
+import com.elogiclab.guardbee.core.plugins.AccessTokenInfoPlugin
 
 case class AccessTokenInfo(
   token: String,
@@ -39,4 +40,10 @@ case class AccessTokenInfo(
 ) {
   def isTokenExpired = token_expiration.isBeforeNow
   def expire_in: Int = ((token_expiration.getMillis - DateTime.now.getMillis) / 1000).intValue
+}
+
+object AccessTokenInfo {
+    import play.api.Play.current 
+    private lazy val instance:AccessTokenInfoPlugin = current.plugin[AccessTokenInfoPlugin].getOrElse(sys.error("Plugin AccessTokenInfoPlugin not loaded!"))
+    def get(token: String): Option[AccessTokenInfo] = instance.get(token)
 }
